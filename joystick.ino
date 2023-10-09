@@ -1,3 +1,15 @@
+// Simple example application that shows how to read four Arduino
+// digital pins and map them to the USB Joystick library.
+//
+// Ground digital pins 9, 10, 11, and 12 to press the joystick 
+// buttons 0, 1, 2, and 3.
+//
+// NOTE: This sketch file is for use with Arduino Leonardo and
+//       Arduino Micro only.
+//
+// by Matthew Heironimus
+// 2015-11-20
+//--------------------------------------------------------------------
 
 #include <Joystick.h>
 #define DT 3
@@ -21,6 +33,12 @@ void setup() {
 
   pinMode(6, INPUT_PULLUP);
   pinMode(7, INPUT_PULLUP);
+  pinMode(8, INPUT_PULLUP);
+  pinMode(9, INPUT_PULLUP);
+  pinMode(10, INPUT_PULLUP);
+  pinMode(14, INPUT_PULLUP);
+  pinMode(15, INPUT_PULLUP);
+  pinMode(16, INPUT_PULLUP);
 
   pinMode(DT, INPUT);
   pinMode(CLK, INPUT);
@@ -74,16 +92,28 @@ int lastButtonState[6] = {0,0,0,0,0,0};
 
 void loop() {
 
-  // Read pin values
-  for (int index = 0; index < 4; index++)
-  {
-    int currentButtonState = !digitalRead(index + pinToButtonMap);
-    if (currentButtonState != lastButtonState[index])
-    {
-      Joystick.setButton(index, currentButtonState);
-      lastButtonState[index] = currentButtonState;
-    }
-  }
+
+  Joystick.setButton(0, !digitalRead(6));
+  Joystick.setButton(1, !digitalRead(7));
+  Joystick.setButton(2, !digitalRead(8));
+  Joystick.setButton(3, !digitalRead(9));
+
+  Joystick.setButton(6, !digitalRead(15));
+  Joystick.setButton(7, !digitalRead(14));
+  Joystick.setButton(8, !digitalRead(16));
+  Joystick.setButton(9, !digitalRead(10));
+
+
+  // // Read pin values
+  // for (int index = 0; index < 4; index++)
+  // {
+  //   int currentButtonState = !digitalRead(index + pinToButtonMap);
+  //   if (currentButtonState != lastButtonState[index])
+  //   {
+  //     Joystick.setButton(index, currentButtonState);
+  //     lastButtonState[index] = currentButtonState;
+  //   }
+  // }
   
   // encoder
     int currentButtonState = btnEncoder1;
@@ -105,9 +135,9 @@ void loop() {
     }
   // *************
 
-  Joystick.setZAxis(readAnalog(A0)); 
+  Joystick.setZAxis(1023-readAnalog(A0)); 
   delay(10);
-  Joystick.setThrottle(readAnalog(A1));
+  Joystick.setThrottle(1023-readAnalog(A1));
   delay(10);
   Joystick.setRzAxis(readAnalog(A2));
   delay(10);
