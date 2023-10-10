@@ -9,7 +9,7 @@
 
 #define encoderUp 4
 #define encoderDn 5
-#define encoderTime 100
+#define encoderDelay 10
 
 Joystick_ Joystick;
 
@@ -51,11 +51,33 @@ void setup() {
 
 void loop() {
 
+  bool oldEncoderUp;
+  bool oldEncoderDn;
+
   for (int i=0; i<=3; i++) {
     Joystick.setButton(i, !digitalRead(switches[i]));
     Joystick.setButton(i+6, !digitalRead(buttons[i]));
-
   }
+
+  if (oldEncoderUp != btnEncoder1) {
+    Joystick.setButton(4,HIGH);
+    delay(encoderDelay);
+    
+  } else {
+    Joystick.setButton(4,LOW);
+  }
+  btnEncoder1 = LOW;
+  oldEncoderUp = btnEncoder1;
+
+  if (oldEncoderDn != btnEncoder2) {
+    Joystick.setButton(5,HIGH);
+    delay(encoderDelay);
+  } else {
+    Joystick.setButton(5,LOW);
+    
+  }
+  btnEncoder2 = LOW;
+  oldEncoderDn = btnEncoder2;
  
   Joystick.setZAxis(1023-analogRead(A0)); 
   delay(5);
@@ -68,24 +90,20 @@ void loop() {
 }
 
 void encoder_value() {
+  noInterrupts();
   currentState = digitalRead(CLK);
   if (currentState != initState  && currentState == 1) {
     if (digitalRead(DT) != currentState) {
-      if (counter<255) { 
-        counter ++; 
-        Joystick.setButton(encoderUp, btnEncoder1);
-        Joystick.setButton(encoderDn, 0);
-      }
-      btnEncoder1 = !btnEncoder1;
+        btnEncoder1 = HIGH;
+        delay(encoderDelay);
+      //btnEncoder1 = !btnEncoder1;
 
     } else {
-      if (counter>0) { 
-        counter --; 
-        Joystick.setButton(encoderDn, btnEncoder2);
-        Joystick.setButton(encoderUp, 0);
-      }
-      btnEncoder2 = !btnEncoder2;
+        btnEncoder2 = HIGH;
+        delay(encoderDelay);
+      //btnEncoder2 = !btnEncoder2;
     }
   }
   initState = currentState;
+  interrupts();
 }
